@@ -1,0 +1,12 @@
+package category
+
+//name=Category type=string #swift
+
+art         // title{Art} #active name{artwork} go{Artwork}
+bag         // title{Handbags} #active paid{true} limit{10}
+boat        // title{Yachts & Boats} paid{true}
+car         // title{Cars} #active list{brand, model, year}
+estate      // title{Real Estate} desc{Houses, flats and land} limit{3}
+jet         // title{Airplanes} desc{Business jets} label{Premium}
+watch       // title{Watches} #active
+"wine & spirits" // title{Wine & Spirits}

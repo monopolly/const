@@ -65,7 +65,7 @@ func isUpperWord(w string) bool {
 func normalizeWords(words []string) []string {
 	allUpper := true
 	for _, w := range words {
-		if _, special := reverseTokenWords[w]; special {
+		if w == tokenWords['*'] || w == tokenWords['>'] {
 			continue
 		}
 		if !isUpperWord(w) && strings.IndexFunc(w, unicode.IsLetter) >= 0 {
@@ -84,8 +84,6 @@ func normalizeWords(words []string) []string {
 	}
 	return res
 }
-
-var reverseTokenWords = map[string]bool{"Any": true, "All": true}
 
 // goName — CamelCase имя константы из строки
 func goName(s string) string {

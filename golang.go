@@ -1,19 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"strconv"
 	"strings"
 )
-
-func golang() []byte {
-	var res bytes.Buffer
-
-	res.Write(generateGo())
-	return res.Bytes()
-}
 
 // isNamed — есть ли отдельный тип (name=Status)
 func isNamed() bool {

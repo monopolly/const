@@ -9,21 +9,13 @@ import (
 var settings Settings
 
 type Settings struct {
-	Package        string //status
-	IndexName      string //Status
-	IndexType      string //int
-	JS             bool
-	Swift          bool //enum
-	SwiftUppercase bool //enum
-	Index          bool //additional index for strings or other
-	UpperCase      bool //All go vars upper
-	Simple         bool
-	file           struct {
-		path   string //test/news.go
-		golang string //test/news.go
-		swift  string //test/news.swift
-		js     string //test/news.js
-	}
+	Package   string // package tester
+	IndexName string // name=Status
+	IndexType string // type=int
+	Swift     bool   // #swift
+	Index     bool   // #index
+	UpperCase bool   // #up
+	Simple    bool   // #simple
 }
 
 func (a *Settings) parse(in string) {
@@ -103,6 +95,13 @@ func (a *Settings) parse(in string) {
 			log.Fatalf("can't make golang name from %q (got %q), set it with go{Name}", name, r.Go)
 		}
 		fields = append(fields, r)
+	}
+
+	if a.Package == "" {
+		log.Fatal("missing package line, e.g. package status")
+	}
+	if len(fields) == 0 {
+		log.Fatal("no values in list")
 	}
 
 	// тип по умолчанию — int (до подсчета индексов, иначе они остаются нулевыми)

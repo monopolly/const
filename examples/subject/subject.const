@@ -1,0 +1,20 @@
+package subject
+
+//name=Subject type=string #swift
+
+sensor.alarm.smoke
+sensor.alarm.water
+sensor.alarm.*
+sensor.*.smoke
+sensor.>
+>
+orders.created     // #orders
+orders.paid        // #orders
+orders.*
+myapp.us-east.users.profile.update
+myapp.*.users.>
+game.room.42.action
+obs.gnss.BEMT
+wasmbus.ctl.v1.{lattice}.component.scale.{host-id}
+$SYS.REQ.SERVER.PING
+$JS.API.STREAM.INFO.ORDERS

@@ -1,0 +1,16 @@
+package status
+
+//name=Status type=int #swift
+
+new     // desc{Waiting for review} iota=1 url{https://example.com/new}
+mistake // desc{User must fix errors} code{500} CodeName{Mistake}
+review  // desc{Waiting for the moderator review after user fix errors} #skip
+active  // desc{Active asset}
+public  // desc{Asset is on the marketplace}
+ban     // desc{Asset banned by moderator}
+deleted // desc{Asset was deleted}
+sold    // desc{Asset was sold}
+
+transferred //#virtual desc{Asset transferred to other user} iota=101
+updated     //#virtual desc{Asset has been updated}
+locked      //#virtual desc{Asset locked by moderator}

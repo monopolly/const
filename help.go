@@ -11,11 +11,6 @@ type Help struct {
 	funcs [][2]string // сгенерированные функции: сигнатура, описание
 }
 
-func (a *Help) init() (b *Help) {
-	a.funcs = nil
-	return a
-}
-
 // doc добавляет сгенерированную функцию в справку файла
 func (a *Help) doc(sig, desc string) {
 	a.funcs = append(a.funcs, [2]string{sig, desc})
@@ -63,13 +58,13 @@ func (a *Help) render() (res []byte) {
 
 	list = append(list, "Struct options (first // line)")
 	for _, x := range structOptions {
-		list = append(list, Status(x[0], x[1]))
+		list = append(list, helpLine(x[0], x[1]))
 	}
 	list = append(list, "")
 
 	list = append(list, "Field options (after // on field line)")
 	for _, x := range fieldOptions {
-		list = append(list, Status(x[0], x[1]))
+		list = append(list, helpLine(x[0], x[1]))
 	}
 	list = append(list, "")
 	list = append(list, "Custom funcs: key is capitalized (code{} > Code()), type is int if all values are numbers,")
@@ -104,47 +99,6 @@ func (a *Help) render() (res []byte) {
 	return
 }
 
-// var oldhelp = `
-// /*
-// 	Struct options:
-
-// 	[] - make tuple json ex: [1,"name"]
-// 	! - New() instead NewItem()
-// 	# - create fields tuple index ID = 0, Name = 1 etc, parse []interface...
-// 	no - no init function New()
-// 	up — title fields ex: ProfileIndexID
-// 	map - generate json map for tuple
-// 	sql:name - generate sql table
-// 	ts:name - generate typescript model
-// 	swift - generate swift model
-
-// 	Field option:
-
-// 	GO:
-// 	+time - Time() function for int
-// 	-func - no field func
-// 	++ — add multiply func for int
-// 	++ — simple func for boolean ConfirmTrue()/ConfirmFalse()
-// 	+raw — write raw json, must be []byte
-// 	go:"type" - replace field type go:"[]*News"
-
-// 	JS:
-// 	js:name - custom json name ex: js:money.count or js:company.report.name
-
-// 	SQL:
-// 	$$ - sql type
-// 	sql:"..." - sql text add to field sql:"primary key"
-// 	-insert - don't add field to insertSQL
-// 	-sql - don't add field in sql table structure
-
-// 	Swift:
-// 	@! - field required
-// 	@@type - add custom field type
-// 	@name - swift file model: @@newsfeed, @@news
-
-// */
-// `
-
-func Status(name string, v interface{}) string {
-	return fmt.Sprintf("%-14s%v", name, v)
+func helpLine(name, desc string) string {
+	return fmt.Sprintf("%-14s%s", name, desc)
 }

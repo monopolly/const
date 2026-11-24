@@ -2,15 +2,10 @@ package main
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
 )
-
-func existList(list []string, index string) bool {
-	return slices.Contains(list, index)
-}
 
 func Title(s string) string {
 	if s == "" {
@@ -85,32 +80,19 @@ var swiftKeywords = map[string]bool{
 	"try": true, "Any": true, "Type": true,
 }
 
-// any text from start until \t\n\space
-func Value(raw string, key string, endtag ...string) (value string) {
+// Value — текст после key до первого пробела: Value("a iota=5 b", "iota=") > "5"
+func Value(raw, key string) string {
 	_, after, ok := strings.Cut(raw, key)
 	if !ok {
-		return
+		return ""
 	}
-	for _, x := range after {
-		switch {
-		case unicode.IsSpace(x):
-			if endtag != nil {
-				value = value + string(x)
-			} else {
-				return
-			}
-		default:
-			if endtag != nil && string(x) == endtag[0] {
-				return
-			}
-			value = value + string(x)
-		}
+	if i := strings.IndexFunc(after, unicode.IsSpace); i > -1 {
+		return after[:i]
 	}
-
-	return
+	return after
 }
 
-// any {{tag value}}
+// Between — текст между startTag и endTag: Between("title{News}", "title{", "}") > "News"
 func Between(raw string, startTag, endTag string) (value string) {
 	indexStart := strings.Index(raw, startTag)
 	if indexStart == -1 {
@@ -127,170 +109,8 @@ func Between(raw string, startTag, endTag string) (value string) {
 	return raw[from:to]
 }
 
-// any {{tag value}}
-func Betweens(raw string, startTag, endTag string) (value []string) {
-	un := map[string]bool{}
-	for {
-		indexStart := strings.Index(raw, startTag)
-		if indexStart == -1 {
-			return
-		}
-
-		from := indexStart + len(startTag)
-		indexEnd := strings.Index(raw[from:], endTag)
-		if indexEnd == -1 {
-			return
-		}
-		to := from + indexEnd //+ len(endTag)
-
-		v := raw[from:to]
-		if un[v] {
-			raw = raw[to:]
-			continue
-		}
-		un[v] = true
-		value = append(value, v)
-		raw = raw[to:]
-	}
-
-}
-
-func formatline(k string, v interface{}) (res string) {
-	switch len(k) / 10 {
-	case 0:
-		return fmt.Sprintf("%-15s %v", k, v)
-	case 1:
-		return fmt.Sprintf("%-15s %v", k, v)
-	case 2:
-		return fmt.Sprintf("%-25s %v", k, v)
-	case 3:
-		return fmt.Sprintf("%-35s %v", k, v)
-	default:
-		return fmt.Sprintf("%-45s %v", k, v)
-	}
-}
-
-func formatLineSwift(k string, v interface{}, lens int) (res string) {
+func formatLineSwift(k string, v any, lens int) (res string) {
 	return fmt.Sprintf("%-*s%v", lens, k, v)
-}
-
-func sqlword(s string) bool {
-	return sqlkeywords[s]
-}
-
-// нельзя использовать в качестве sql полей
-var sqlkeywords = map[string]bool{
-	"all":               true,
-	"analyse":           true,
-	"analyze":           true,
-	"and":               true,
-	"any":               true,
-	"array":             true,
-	"as":                true,
-	"asc":               true,
-	"asymmetric":        true,
-	"authorization":     true,
-	"binary":            true,
-	"both":              true,
-	"case":              true,
-	"cast":              true,
-	"check":             true,
-	"collate":           true,
-	"collation":         true,
-	"column":            true,
-	"concurrently":      true,
-	"constraint":        true,
-	"create":            true,
-	"cross":             true,
-	"current_catalog":   true,
-	"current_date":      true,
-	"current_role":      true,
-	"current_schema":    true,
-	"current_time":      true,
-	"current_timestamp": true,
-	"current_user":      true,
-	"day":               true,
-	"default":           true,
-	"deferrable":        true,
-	"desc":              true,
-	"distinct":          true,
-	"do":                true,
-	"else":              true,
-	"end":               true,
-	"except":            true,
-	"false":             true,
-	"fetch":             true,
-	"filter":            true,
-	"for":               true,
-	"foreign":           true,
-	"freeze":            true,
-	"from":              true,
-	"full":              true,
-	"grant":             true,
-	"group":             true,
-	"having":            true,
-	"hour":              true,
-	"ilike":             true,
-	"in":                true,
-	"initially":         true,
-	"inner":             true,
-	"intersect":         true,
-	"into":              true,
-	"is":                true,
-	"isnull":            true,
-	"join":              true,
-	"lateral":           true,
-	"leading":           true,
-	"left":              true,
-	"like":              true,
-	"limit":             true,
-	"localtime":         true,
-	"localtimestamp":    true,
-	"minute":            true,
-	"month":             true,
-	"natural":           true,
-	"not":               true,
-	"notnull":           true,
-	"null":              true,
-	"offset":            true,
-	"on":                true,
-	"only":              true,
-	"or":                true,
-	"order":             true,
-	"outer":             true,
-	"over":              true,
-	"overlaps":          true,
-	"placing":           true,
-	"primary":           true,
-	"references":        true,
-	"returning":         true,
-	"right":             true,
-	"second":            true,
-	"select":            true,
-	"session_user":      true,
-	"similar":           true,
-	"some":              true,
-	"symmetric":         true,
-	"table":             true,
-	"tablesample":       true,
-	"then":              true,
-	"to":                true,
-	"trailing":          true,
-	"true":              true,
-	"union":             true,
-	"unique":            true,
-	"user":              true,
-	"using":             true,
-	"variadic":          true,
-	"varying":           true,
-	"verbose":           true,
-	"when":              true,
-	"where":             true,
-	"window":            true,
-	"with":              true,
-	"within":            true,
-	"without":           true,
-	"year":              true,
 }
 
 func lowerFirst(s string) string {
